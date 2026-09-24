@@ -13,23 +13,45 @@ $title = "Simple Blog";
 $body = "Loading...";
 $header = "";
 $footer = "";
+$sidebar = "";
 
 
-
+function displayForm($title="", $content="") {
  $form = '<form method="post" >';
-    $form .= '<input type="text" name="title">';
+    $form .= '<div class="form-group"><label for="title">Überschrift</label>';
+    $form .= '<input class="form-control" type="text" name="title" id="title" value="' . htmlspecialchars($title) . '">';
+    $form .= '</div>';
     $form .= '<br>';
-    $form .= '<textarea name="content"></textarea>';
+    $form .= '<div class="form-group"><label for="content">Inhalt</label>';
+    $form .= '<textarea class="form-control" name="content" id="content">' . htmlspecialchars($content) . '</textarea>';
+    $form .= '</div>';
     $form .= '<br>';
-    $form .= '<input type="submit" value="speichern">';
+    $form .= '<input type="submit" class="btn btn-primary mb-3 " value="speichern">';
     $form .= '</form>';
-    
+    return $form;
+}
 
 
 if(isset($_GET['action']) && $_GET['action'] === "add") {
     
-    $body = $form;
+    $body = displayForm();
 }
+
+function displayLastBlogPosts($posts) {
+    $postHtml = '<ul>';
+    foreach($posts as $post) {
+        $postHtml .= '<li>';
+        $postHtml .= '<a href="index.php?action=view&id=' . intval($post['id']) . '">';
+        $postHtml .= '' . $post['title'] . '';
+        $postHtml .= '</a>';
+        $postHtml .= '<hr>';
+        $postHtml .= '</li>';
+    }
+    $postHtml .= '</ul>';
+    return $postHtml;
+}
+$sidebar .= "<h3>Letzte Beiträge</h3>";
+$sidebar .= displayLastBlogPosts(getPosts($conn, 1, 5));
 
 if(isset($_GET['action']) && $_GET['action'] === "edit") {
 
@@ -38,19 +60,17 @@ if(isset($_GET['action']) && $_GET['action'] === "edit") {
         $result = $conn->query("SELECT * FROM posts WHERE id = " . intval($id));
         if($result->num_rows > 0) {
             $post = $result->fetch_assoc();
-            $form = '<form method="post" >';
-            $form .= '<input type="text" name="title" value="' . htmlspecialchars($post['title']) . '">';
-            $form .= '<br>';
-            $form .= '<textarea name="content">' . htmlspecialchars($post['content']) . '</textarea>';
-            $form .= '<br>';
-            $form .= '<input type="submit" value="speichern">';
-            $form .= '</form>';
+            $form = displayForm($post['title'], $post['content']); 
 
-
+            $form .= '<br>';
+            $form .= '<h3>Bilder hochladen:</h3>';
             $form.='<form method="post" enctype="multipart/form-data">';
-            $form.='<input type="file" name="file"  accept="image/png, image/jpeg">';
+            $form.='<div class="form-group">'; 
+            $form.='<label for="file">Bild auswählen</label>';
+            $form.='<input type="file" name="file" class="form-control" accept="image/png, image/jpeg">';
+            $form.='</div>'; 
             $form.='<br>'; 
-            $form.='<input type="submit" value="Upload">';
+            $form.='<input type="submit" class="btn btn-primary mb-3 " value="Upload">';
             $form.='</form>';
         }
     }
@@ -69,12 +89,7 @@ if(isset($_FILES['file']) && isset($_GET['action']) && $_GET['action'] === "edit
     
     $targetFile = $targetDir . $fileName;
     move_uploaded_file($_FILES["file"]["tmp_name"], $targetFile);
-    // if(move_uploaded_file($_FILES["file"]["tmp_name"], $targetFile)) {
-    //     $stmt = $conn->prepare("UPDATE posts SET image = ? WHERE id = ?");
-    //     $stmt->bind_param("si", $targetFile, $id);
-    //     $stmt->execute();
-    //     $stmt->close();
-    // }
+
 }
 
 if(isset($_POST['title']) && isset($_POST['content'])) {
@@ -196,7 +211,7 @@ $body = displayBlogPosts($conn, $_GET['page'] ?? 1, $perPage);
     <?php echo $body; ?>
     </div>
     <div class="col-3   ">
-        side
+        <?php echo $sidebar; ?>
     </div>
     </div>
 
