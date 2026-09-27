@@ -16,6 +16,58 @@ $footer = "";
 $sidebar = "";
 
 
+$tinymceInit = '<script>
+    tinymce.init({
+        selector: "textarea",
+        license_key: "gpl",
+        plugins: "code, image",
+        toolbar: [
+            { name: "history", items: [ "undo", "redo" ] },
+            { name: "styles", items: [ "styles" ] },
+            { name: "formatting", items: [ "bold", "italic" ] },
+            { name: "alignment", items: [ "alignleft", "aligncenter", "alignright", "alignjustify", "bullist" ] },
+            { name: "indentation", items: [ "outdent", "indent" ] },
+            { name: "expert", items: [ "image", "code" ] }
+        ],
+        image_list: [';
+            
+            if(isset($_GET["id"])) {
+                $id = $_GET["id"];
+                if(is_dir("uploads/" . $id)) {
+                    $images = scandir("uploads/" . $id);
+                    foreach($images as $image) {
+                        if($image !== "." && $image !== "..") {
+                            $tinymceInit .= "{ title: \"" . $image . "\", value: \"uploads/" . $id . "/" . $image . "\" },";
+                        }
+                    }
+                }
+            }
+            
+        
+  $tinymceInit .=' ],     image_class_list: [
+            { title: "None", value: "" },
+            { title: "Float Start", value: "img-fluid float-start" },
+            { title: "Float End", value: "img-fluid float-end" }
+        ]
+    });
+</script>';
+
+
+function createMainNav() {
+    $nav = [
+        ["title" => "Home", "url" => "index.php"],
+        ["title" => "Neuen Beitrag", "url" => "index.php?action=add"]
+    ];
+    return $nav;
+}
+function createTopRightNav() {
+    $nav = [
+        ["title" => "Home", "url" => "index.php"],
+        ["title" => "Impressum", "url" => "index.php?action=add"]
+    ];
+    return $nav;
+}
+
 function displayForm($title="", $content="") {
  $form = '<form method="post" >';
     $form .= '<div class="form-group"><label for="title">Überschrift</label>';
@@ -37,21 +89,34 @@ if(isset($_GET['action']) && $_GET['action'] === "add") {
     $body = displayForm();
 }
 
-function displayLastBlogPosts($posts) {
-    $postHtml = '<ul>';
-    foreach($posts as $post) {
-        $postHtml .= '<li>';
-        $postHtml .= '<a href="index.php?action=view&id=' . intval($post['id']) . '">';
-        $postHtml .= '' . $post['title'] . '';
-        $postHtml .= '</a>';
-        $postHtml .= '<hr>';
-        $postHtml .= '</li>';
+if(isset($_GET['action']) && $_GET['action'] === "view") {
+    if(isset($_GET['id'])) {
+        $id = $_GET['id'];
+        $result = $conn->query("SELECT * FROM posts WHERE id = " . intval($id));
+        if($result->num_rows > 0) {
+            $post = $result->fetch_assoc();
+    $body = ' <article class="main-card">
+          <h1 class="entry-title">' . htmlspecialchars($post['title']) . '</h1>
+          <div class="entry-meta">
+            ' . htmlspecialchars($post['published']) . ' by <a href="#">' . htmlspecialchars('Faker 3000') . '</a> — <a href="#">8 Comments</a> (<a href="#">Edit</a>)
+          </div>
+          
+          <!-- Platzhalter für Beitragsbild -->
+           <div class="featured-image-holder text-center text-muted">
+             <div>
+               <i class="bi bi-laptop display-1"></i>
+               <p class="mt-2">[ Beitragsbild Placeholder ]</p>
+             </div>
+           </div>
+          
+          <div class="entry-content">
+            ' . $post['content'] . '
+          </div>
+        </article>';
+        }
     }
-    $postHtml .= '</ul>';
-    return $postHtml;
 }
-$sidebar .= "<h3>Letzte Beiträge</h3>";
-$sidebar .= displayLastBlogPosts(getPosts($conn, 1, 5));
+
 
 if(isset($_GET['action']) && $_GET['action'] === "edit") {
 
@@ -125,11 +190,28 @@ function displayBlogPosts($conn, int $page , int $perPage) {
 $postHtml = '';
     $posts = getPosts($conn, $page, $perPage);
        foreach($posts as $post) {
-           $postHtml.='<h2>' . htmlspecialchars($post['title']) . '</h2>';
-           $postHtml.='' . $post['content'] . '';
-           $postHtml.='<small>Veröffentlicht am: ' . htmlspecialchars($post['published']) . '</small>';
-           $postHtml.='<a href="index.php?action=edit&id=' . $post['id'] . '">bearbeiten</a>';
-           $postHtml.='<hr>';
+
+$postHtml.='<article class="post-card">
+          <h2 class="entry-title"><a href="index.php?action=view&id=' . $post['id'] . '">' . htmlspecialchars($post['title']) . '</a></h2>
+          <div class="entry-meta">
+            ' . htmlspecialchars($post['published']) . ' by <a href="#">Kung Fu Panda</a> — <a href="#">8 Comments</a>
+          </div>';
+        //   $postHtml.='<div class="featured-image-holder">
+        //     <div class="text-center">
+        //       <i class="bi bi-laptop display-4"></i>
+        //       <p class="mb-0 mt-1">[ Visual Content / Laptop Image ]</p>
+        //     </div>
+        //   </div>';
+          $postHtml.=' ' . $post['content'] . '<br>
+          <a href="index.php?action=view&id=' . $post['id'] . '" class="btn-read-more">Lesen»</a>
+          <a href="index.php?action=edit&id=' . $post['id'] . '" class="btn-read-more">Bearbeiten »</a>
+        </article>';
+
+        //    $postHtml.='<h2>' . htmlspecialchars($post['title']) . '</h2>';
+        //    $postHtml.='' . $post['content'] . '';
+        //    $postHtml.='<small>Veröffentlicht am: ' . htmlspecialchars($post['published']) . '</small>';
+        //    $postHtml.='<a href="index.php?action=edit&id=' . $post['id'] . '">bearbeiten</a>';
+        //    $postHtml.='<hr>';
        }
    return $postHtml;    
        }
@@ -147,8 +229,8 @@ $body = displayBlogPosts($conn, $_GET['page'] ?? 1, $perPage);
 
     function displayPagination(int $page, int $totalPages) {
         $body = '';
-        $body.='<nav aria-label="Page navigation">
-                <ul class="pagination">';
+        $body.='<nav aria-label="Page navigation" class="mb-4">
+                <ul class="pagination  justify-content-center">';
                 if(($page ?? 1) > 1) {
                     $body.='<li class="page-item">
                         <a class="page-link" href="index.php?page=' . (($page ?? 1) - 1) . '" aria-label="Previous">
@@ -157,7 +239,7 @@ $body = displayBlogPosts($conn, $_GET['page'] ?? 1, $perPage);
                     </li>';
                 }
                     for($i = 1; $i <= $totalPages; $i++) {
-                        $body.='<li class="page-item"><a class="page-link" href="index.php?page=' . $i . '">' . $i . '</a></li>';
+                        $body.='<li class="page-item ' . (($i == $page) ? 'active' : '') . '"><a class="page-link" href="index.php?page=' . $i . '">' . $i . '</a></li>';
                     }
 
                 if(($page ?? 1) < $totalPages) {
@@ -171,96 +253,17 @@ $body = displayBlogPosts($conn, $_GET['page'] ?? 1, $perPage);
                 </nav>';
         return $body;
     }
+    if(!isset($_GET['action'])) {
     $page = $_GET['page'] ?? 1;
     $totalPages = getTotalPages($conn, $perPage);
     if($totalPages > 1) {
         $pagination = displayPagination($page, $totalPages);
         $body .= $pagination;
     }
+    }
 
 ?> 
-<!DOCTYPE HTML>
-<html lang="de">
-<head>
-<title><?php echo $title; ?></title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php echo $header; ?>
-    <script src="js/tinymce/tinymce.min.js"></script>
-</head>
-<body>
-    <div class="container ">
-    <h1><?php echo $title; ?></h1>
-
-    <header>
-        <ul class="nav nav-underline" >
-  <li class="nav-item">
-    <a class="nav-link <?php echo ($_GET['action'] ?? '') === '' ? 'active' : ''; ?>" aria-current="page" href="index.php">Home</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link <?php echo ($_GET['action'] ?? '') === 'add' ? 'active' : ''; ?>" href="index.php?action=add">Neuen Post</a>
-  </li>
- 
-</ul>
-      
-    </header>
-
-    <div class="row">
-    <div class="col-9">
-   
-    <?php echo $body; ?>
-    </div>
-    <div class="col-3   ">
-        <?php echo $sidebar; ?>
-    </div>
-    </div>
-
-    
-    
-    </div>
-    <?php echo $footer; ?>
-    <script>
-        tinymce.init({
-            selector: 'textarea',
-            license_key: 'gpl',
-            plugins: 'code, image',
-            // toolbar: 'undo redo | styles | bold italic | link image code',
-            toolbar: [
-                { name: 'history', items: [ 'undo', 'redo' ] },
-                { name: 'styles', items: [ 'styles' ] },
-                { name: 'formatting', items: [ 'bold', 'italic' ] },
-                
-                { name: 'alignment', items: [ 'alignleft', 'aligncenter', 'alignright', 'alignjustify, bullist' ] },
-                { name: 'indentation', items: [ 'outdent', 'indent' ] },
-                { name: 'expert', items: [ 'image', 'code' ] }
-            ],
-//   toolbar: 'image',
-  image_list: [
-    <?php
-    if(isset($_GET['id'])) {
-        $id = $_GET['id'];
-        if(is_dir('uploads/' . $id)) {
-        $images = scandir('uploads/' . $id);
-        foreach($images as $image) {
-            if($image !== '.' && $image !== '..') {
-                echo "{ title: '" . $image . "', value: 'uploads/" . $id . "/" . $image . "' },";
-            }
-        }
-        }
-    }
-    ?>
-  ]  ,
-  image_class_list: [
-    { title: 'None', value: '' },
-    { title: 'Float Start', value: 'img-fluid float-start' },
-    { title: 'Float End', value: 'img-fluid float-end' }
-  ]    
-        });
-    </script>
- 
-</body>
-</html>
-
+<?php include 'theme/theme.php'; ?>
 
 <?php
 $conn->close();

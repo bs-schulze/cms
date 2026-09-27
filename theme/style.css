@@ -1,0 +1,227 @@
+body {
+  background-color: #f5f5f5;
+  color: #333;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+/* Top Header */
+.top-header {
+  background-color: #fff;
+  padding: 25px 0 15px;
+}
+.site-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #222;
+  text-decoration: none;
+}
+.site-description {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Navigationsleisten */
+.secondary-nav .nav-link {
+  color: #555;
+  font-size: 0.9rem;
+  padding: 8px 15px;
+}
+.primary-nav {
+  background-color: #fff;
+  border-bottom: 1px solid #e5e5e5;
+}
+.primary-nav .nav-link {
+  color: #333;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 12px 18px;
+}
+.primary-nav .nav-link:hover {
+  color: #c83226;
+}
+
+/* Hauptinhalt */
+.main-card {
+  background: #fff;
+  padding: 35px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+.entry-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 10px;
+}
+.entry-meta {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+.entry-meta a {
+  color: #c83226;
+  text-decoration: none;
+}
+.entry-meta a:hover {
+  text-decoration: underline;
+}
+.featured-image-holder {
+  background-color: #e2ddd5;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+  border-radius: 2px;
+}
+
+/* Sidebar Widgets */
+.sidebar-widget {
+  background: #fff;
+  padding: 25px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
+}
+
+/* Newsletter Widget */
+.widget-newsletter {
+  background-color: #333333;
+  color: #fff;
+}
+.widget-newsletter h5 {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+.widget-newsletter p {
+  font-size: 0.85rem;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+.widget-newsletter .btn-subscribe {
+  background-color: #c83226;
+  color: #fff;
+  font-weight: 600;
+  width: 100%;
+  border: none;
+  padding: 10px;
+}
+.widget-newsletter .btn-subscribe:hover {
+  background-color: #b22a1f;
+}
+
+/* Social Icons Widget */
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+.social-btn {
+  background: #f0f0f0;
+  color: #333;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 3px;
+  font-size: 1.1rem;
+}
+.social-btn:hover {
+  background: #e0e0e0;
+  color: #000;
+}
+
+/* Links & Buttons */
+.widget-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+}
+.recent-posts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.recent-posts-list li a {
+  color: #c83226;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.recent-posts-list li a:hover {
+  text-decoration: underline;
+}
+
+/* Archive Post Cards */
+.post-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+.entry-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.entry-title a {
+  color: #222;
+  text-decoration: none;
+}
+.entry-title a:hover {
+  color: #c83226;
+}
+.entry-meta {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+.entry-meta a {
+  color: #c83226;
+  text-decoration: none;
+}
+.entry-meta a:hover {
+  text-decoration: underline;
+}
+.featured-image-holder {
+  background-color: #e2ddd5;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 2px;
+  color: #777;
+}
+.btn-read-more {
+  background-color: #c83226;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 3px;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-read-more:hover {
+  background-color: #b22a1f;
+  color: #fff;
+}
+
+/* Pagination */
+.pagination .page-link {
+  color: #333;
+  border-color: #dee2e6;
+}
+.pagination .page-item.active .page-link {
+  background-color: #c83226;
+  border-color: #c83226;
+  color: #fff;
+}
